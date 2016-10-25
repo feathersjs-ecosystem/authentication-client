@@ -56,4 +56,12 @@ export default function (settings, username, password, useSocketio, next) {
         next(null, { app, server });
       });
   });
+
+  if (useSocketio) {
+    console.log('listening to upgrade-me');
+    app.io.on('upgrade-me', () => {
+      console.log('got upgrade-me message');
+      server.io.broadcast.emit('boom', {message: 'from server'});
+    });
+  }
 }

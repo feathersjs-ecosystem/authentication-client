@@ -133,6 +133,20 @@ const setupTests = initApp => {
       });
     });
   });
+
+  it('handles upgrade events', done => {
+    if (app.io) {
+      app.io.on('boom', () => {
+        console.log('upgraded');
+        done();
+      });
+
+      console.log('sending upgrade-me message');
+      app.io.emit('upgrade-me', {message: 'from client'});
+    } else {
+      done();
+    }
+  });
 };
 
 describe('Client side authentication', () => {
