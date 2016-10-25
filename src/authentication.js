@@ -6,7 +6,8 @@ import {
    retrieveJWT,
    getStorage,
    clearCookie,
-   verifyJWT
+   verifyJWT,
+   getSocketMethodName
  } from './utils';
 
 export default class Authentication {
@@ -29,6 +30,7 @@ export default class Authentication {
 
   authenticate (options = {}) {
     const app = this.app;
+    const method = getSocketMethodName(app);
     const globalOptions = this.options;
     let getOptions = Promise.resolve(options);
 
@@ -46,10 +48,14 @@ export default class Authentication {
       }
     }
 
-    const handleResponse = function (response) {
+    const handleResponse = function (response, socket) {
       if (response.token) {
         app.set('token', response.token);
         app.get('storage').setItem(globalOptions.tokenKey, response.token);
+      }
+      if (socket) {
+        socket.on('reconnect', () => authenticateSocket(options, socket, method));
+        socket.io.engine.on('upgrade', () => authenticateSocket(options, socket, method));
       }
       return Promise.resolve(response);
     };
@@ -71,9 +77,6 @@ export default class Authentication {
         if (app.rest) {
           return app.service(endpoint).create(options).then(handleResponse);
         }
-
-        const method = app.io ? 'emit' : 'send';
-
         return authenticateSocket(options, socket, method).then(handleResponse);
       });
     });

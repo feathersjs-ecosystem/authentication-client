@@ -32,10 +32,17 @@ export function connected (app) {
 export function authenticateSocket (options, socket, method) {
   return new Promise((resolve, reject) => {
     socket.once('unauthorized', reject);
-    socket.once('authenticated', resolve);
+    socket.once('authenticated', response => {
+      return resolve(response, socket);
+    });
 
     socket[method]('authenticate', options);
   });
+}
+
+// Returns the name of the current provider. (rest, socketio, primus)
+export function getSocketMethodName (app) {
+  return app.rest ? null : app.io ? 'emit' : 'send';
 }
 
 // Returns a promise that de-authenticates a socket

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { retrieveJWT, verifyJWT } from '../src/utils';
+import { retrieveJWT, verifyJWT, getSocketMethodName } from '../src/utils';
 
 const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjozNDc2MzkyNDgwLCJpYXQiOjE0NzYzOTI0ODAsImlzcyI6ImZlYXRoZXJzIn0.0V6NKoNszBPeIA72xWs2FDW6aPxOnHzEmskulq20uyo';
 const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJleHAiOjE0NzYzOTI0ODAsImlhdCI6MTQ3NjM5MjQ4MCwiaXNzIjoiZmVhdGhlcnMifQ.6rzpXFqWSmNEotnWo8f-SQ2Ey4rbar3f0pQKNTHdq9A';
@@ -65,5 +65,13 @@ describe('verifyJWT', () => {
     return verifyJWT(expiredToken).catch(error => {
       expect(error instanceof Error).to.equal(true);
     });
+  });
+});
+
+describe('getSocketMethodName', () => {
+  it('returns the correct provider name for all providers', () => {
+    expect(getSocketMethodName({rest: true})).to.equal(null);
+    expect(getSocketMethodName({io: true})).to.equal('emit');
+    expect(getSocketMethodName({primus: true})).to.equal('send');
   });
 });
