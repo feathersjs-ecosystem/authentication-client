@@ -17,15 +17,15 @@ export default function (settings, username, password, useSocketio, next) {
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true }))
     .configure(authentication(settings))
-    .configure(authentication.LocalService(settings))
-    .configure(authentication.TokenService(settings))
     .use('/users', memory())
     .use('/messages', memory())
     .use(errorHandler());
+    console.log(app.service('authentication'));
 
   let server = app.listen(8888);
 
   let userService = app.service('/users');
+
   userService.before({
     create: [hooks.hashPassword()]
   });

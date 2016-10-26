@@ -1,11 +1,12 @@
 import * as hooks from './hooks';
 import Authentication from './authentication';
+import setupRestService from './services/rest';
+import SocketService from './services/socket';
 
 const defaults = {
   cookie: 'feathers-jwt',
   tokenKey: 'feathers-jwt',
-  localEndpoint: '/auth/local',
-  tokenEndpoint: '/auth/token'
+  endpoint: '/authentication'
 };
 
 export default function (opts = {}) {
@@ -18,10 +19,16 @@ export default function (opts = {}) {
     app.authenticate = app.authentication.authenticate.bind(app.authentication);
     app.logout = app.authentication.logout.bind(app.authentication);
 
+    if (app.rest) {
+      setupRestService(app);
+    } else {
+      app.service(options.endpoint, new SocketService(app));
+    }
+
     // Set up hook that adds token and user to params so that
     // it they can be accessed by client side hooks and services
     app.mixins.push(function (service) {
-      if (typeof service.before !== 'function' || typeof service.after !== 'function') {
+      if (typeof service.hooks !== 'function') {
         throw new Error(`It looks like feathers-hooks isn't configured. It is required before running feathers-authentication.`);
       }
 

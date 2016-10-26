@@ -28,6 +28,14 @@ export function connected (app) {
   });
 }
 
+export function handleResponse (app, response) {
+  if (response.token) {
+    app.set('token', response.token);
+    app.get('storage').setItem(app.authentication.options.tokenKey, response.token);
+  }
+  return Promise.resolve(response);
+}
+
 // Returns a promise that authenticates a socket
 export function authenticateSocket (options, socket, method) {
   return new Promise((resolve, reject) => {
