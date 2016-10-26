@@ -21,7 +21,7 @@ export default class Authentication {
 
     this.getJWT().then(token => {
       if (token) {
-        app.set('token', token);
+        app.set('accessToken', token);
         app.get('storage').setItem(options.tokenKey, token);
       }
     });
@@ -55,21 +55,11 @@ export default class Authentication {
     };
 
     return getOptions.then(options => {
-      let endpoint;
-
-      if (options.type === 'local') {
-        endpoint = globalOptions.localEndpoint;
-      } else if (options.type === 'token') {
-        endpoint = globalOptions.tokenEndpoint;
-      } else {
-        throw new Error(`Unsupported authentication 'type': ${options.type}`);
-      }
-
       return connected(app).then(socket => {
         // TODO (EK): Handle OAuth logins
         // If we are using a REST client
         if (app.rest) {
-          return app.service(endpoint).create(options).then(handleResponse);
+          return app.service(globalOptions.endpoint).create(options).then(handleResponse);
         }
 
         const method = app.io ? 'emit' : 'send';
