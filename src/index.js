@@ -1,11 +1,10 @@
-import * as hooks from './hooks';
+import hooks from './hooks';
 import Authentication from './authentication';
 
 const defaults = {
   cookie: 'feathers-jwt',
-  tokenKey: 'feathers-jwt',
-  localEndpoint: '/auth/local',
-  tokenEndpoint: '/auth/token'
+  tokenKey: 'accessToken',
+  service: '/authentication'
 };
 
 export default function (opts = {}) {
@@ -21,11 +20,12 @@ export default function (opts = {}) {
     // Set up hook that adds token and user to params so that
     // it they can be accessed by client side hooks and services
     app.mixins.push(function (service) {
+      // if (typeof service.hooks !== 'function') {
       if (typeof service.before !== 'function' || typeof service.after !== 'function') {
         throw new Error(`It looks like feathers-hooks isn't configured. It is required before running feathers-authentication.`);
       }
 
-      service.before(hooks.populateParams());
+      service.before(hooks.populateAccessToken());
     });
 
     // Set up hook that adds authorization header for REST provider

@@ -31,10 +31,13 @@ export function connected (app) {
 // Returns a promise that authenticates a socket
 export function authenticateSocket (options, socket, method) {
   return new Promise((resolve, reject) => {
-    socket.once('unauthorized', reject);
-    socket.once('authenticated', resolve);
+    socket[method]('authenticate', options, (error, data) => {
+      if (error) {
+        return reject(error);
+      }
 
-    socket[method]('authenticate', options);
+      resolve(data);
+    });
   });
 }
 

@@ -19,10 +19,10 @@ export default class Authentication {
       app.set('storage', storage);
     }
 
-    this.getJWT().then(token => {
-      if (token) {
-        app.set('token', token);
-        app.get('storage').setItem(options.tokenKey, token);
+    this.getJWT().then(accessToken => {
+      if (accessToken) {
+        app.set('accessToken', accessToken);
+        app.get('storage').setItem(options.tokenKey, accessToken);
       }
     });
   }
@@ -32,44 +32,34 @@ export default class Authentication {
     const globalOptions = this.options;
     let getOptions = Promise.resolve(options);
 
-    // If no type was given let's try to authenticate with a stored JWT
-    if (!options.type) {
-      if (options.token) {
-        options.type = 'token';
+    // If no strategy was given let's try to authenticate with a stored JWT
+    if (!options.strategy) {
+      if (options.accessToken) {
+        options.strategy = 'jwt';
       } else {
-        getOptions = this.getJWT().then(token => {
-          if (!token) {
-            return Promise.reject(new errors.NotAuthenticated(`Could not find stored JWT and no authentication type was given`));
+        getOptions = this.getJWT().then(accessToken => {
+          if (!accessToken) {
+            return Promise.reject(new errors.NotAuthenticated(`Could not find stored JWT and no authentication strategy was given`));
           }
-          return { type: 'token', token };
+          return { strategy: 'jwt', accessToken };
         });
       }
     }
 
     const handleResponse = function (response) {
-      if (response.token) {
-        app.set('token', response.token);
-        app.get('storage').setItem(globalOptions.tokenKey, response.token);
+      if (response.accessToken) {
+        app.set('accessToken', response.accessToken);
+        app.get('storage').setItem(globalOptions.tokenKey, response.accessToken);
       }
       return Promise.resolve(response);
     };
 
     return getOptions.then(options => {
-      let endpoint;
-
-      if (options.type === 'local') {
-        endpoint = globalOptions.localEndpoint;
-      } else if (options.type === 'token') {
-        endpoint = globalOptions.tokenEndpoint;
-      } else {
-        throw new Error(`Unsupported authentication 'type': ${options.type}`);
-      }
-
       return connected(app).then(socket => {
         // TODO (EK): Handle OAuth logins
         // If we are using a REST client
         if (app.rest) {
-          return app.service(endpoint).create(options).then(handleResponse);
+          return app.service(options.service).create(options).then(handleResponse);
         }
 
         const method = app.io ? 'emit' : 'send';
@@ -82,9 +72,9 @@ export default class Authentication {
   getJWT () {
     const app = this.app;
     return new Promise((resolve) => {
-      const token = app.get('token');
-      if (token) {
-        return resolve(token);
+      const accessToken = app.get('accessToken');
+      if (accessToken) {
+        return resolve(accessToken);
       }
       retrieveJWT(this.options.tokenKey, this.options.cookie, app.get('storage')).then(resolve);
     });
@@ -97,10 +87,10 @@ export default class Authentication {
   logout () {
     const app = this.app;
 
-    app.set('token', null);
+    app.set('accessToken', null);
     clearCookie(this.options.cookie);
 
-    // remove the token from localStorage
+    // remove the accessToken from localStorage
     return Promise.resolve(app.get('storage').removeItem(this.options.tokenKey)).then(() => {
       // If using sockets de-authenticate the socket
       if (app.io || app.primus) {
