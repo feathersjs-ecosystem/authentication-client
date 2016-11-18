@@ -3,8 +3,10 @@ import { populateHeader } from '../../src/hooks';
 
 describe('hooks:populateHeader', () => {
   let hook;
+  let options;
 
   beforeEach(() => {
+    options = { header: 'authorization' };
     hook = {
       type: 'before',
       params: {
@@ -14,11 +16,21 @@ describe('hooks:populateHeader', () => {
     };
   });
 
+  describe('when options.header is missing', () => {
+    it('throws an error', () => {
+      delete options.header;
+
+      expect(() => {
+        populateHeader(options);
+      }).to.throw;
+    });
+  });
+
   describe('when not called as a before hook', () => {
     it('returns an error', () => {
       hook.type = 'after';
 
-      return populateHeader()(hook).catch(error => {
+      return populateHeader(options)(hook).catch(error => {
         expect(error).to.not.equal(undefined);
       });
     });
@@ -27,7 +39,7 @@ describe('hooks:populateHeader', () => {
   describe('when accessToken is missing', () => {
     it('does nothing', () => {
       delete hook.params.accessToken;
-      return populateHeader()(hook).then(newHook => {
+      return populateHeader(options)(hook).then(newHook => {
         expect(newHook).to.deep.equal(hook);
       });
     });
@@ -35,7 +47,7 @@ describe('hooks:populateHeader', () => {
 
   describe('when accessToken is present', () => {
     it('adds the accessToken to authorization header', () => {
-      return populateHeader()(hook).then(hook => {
+      return populateHeader(options)(hook).then(hook => {
         expect(hook.params.headers.authorization).to.equal('my token');
       });
     });
@@ -46,14 +58,15 @@ describe('hooks:populateHeader', () => {
         custom: 'custom'
       };
 
-      return populateHeader()(hook).then(hook => {
+      return populateHeader(options)(hook).then(hook => {
         expect(hook.params.headers.authorization).to.equal('existing');
         expect(hook.params.headers.custom).to.equal('custom');
       });
     });
 
     it('supports a custom token header', () => {
-      return populateHeader({header: 'custom'})(hook).then(hook => {
+      options.header = 'custom';
+      return populateHeader(options)(hook).then(hook => {
         expect(hook.params.headers.custom).to.equal('my token');
       });
     });

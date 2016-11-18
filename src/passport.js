@@ -22,7 +22,7 @@ export default class Passport {
     this.getJWT().then(accessToken => {
       if (accessToken) {
         app.set('accessToken', accessToken);
-        app.get('storage').setItem(options.tokenKey, accessToken);
+        app.get('storage').setItem(options.storageKey, accessToken);
       }
     });
   }
@@ -48,7 +48,7 @@ export default class Passport {
     const handleResponse = (response) => {
       if (response.accessToken) {
         app.set('accessToken', response.accessToken);
-        app.get('storage').setItem(this.options.tokenKey, response.accessToken);
+        app.get('storage').setItem(this.options.storageKey, response.accessToken);
       }
       return Promise.resolve(response);
     };
@@ -73,7 +73,7 @@ export default class Passport {
       if (accessToken) {
         return resolve(accessToken);
       }
-      retrieveJWT(this.options.tokenKey, this.options.cookie, app.get('storage')).then(resolve);
+      retrieveJWT(this.options.storageKey, this.options.cookie, app.get('storage')).then(resolve);
     });
   }
 
@@ -88,7 +88,7 @@ export default class Passport {
     clearCookie(this.options.cookie);
 
     // remove the accessToken from localStorage
-    return Promise.resolve(app.get('storage').removeItem(this.options.tokenKey)).then(() => {
+    return Promise.resolve(app.get('storage').removeItem(this.options.storageKey)).then(() => {
       // If using sockets de-authenticate the socket
       if (app.io || app.primus) {
         const method = app.io ? 'emit' : 'send';

@@ -13,12 +13,16 @@ describe('Feathers Authentication Client', () => {
   });
 
   describe('default options', () => {
+    it('sets the authorization header', () => {
+      expect(client.passport.options.header).to.equal('authorization');
+    });
+
     it('sets the cookie name', () => {
       expect(client.passport.options.cookie).to.equal('feathers-jwt');
     });
 
     it('sets the name used for localstorage', () => {
-      expect(client.passport.options.tokenKey).to.equal('feathers-jwt');
+      expect(client.passport.options.storageKey).to.equal('feathers-jwt');
     });
 
     it('sets the auth service path', () => {

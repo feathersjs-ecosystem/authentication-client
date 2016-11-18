@@ -104,8 +104,8 @@ export function payloadIsValid (payload) {
 }
 
 // Tries the JWT from the given key either from a storage or the cookie.
-export function retrieveJWT (tokenKey, cookieKey, storage) {
-  return Promise.resolve(storage.getItem(tokenKey)).then(jwt => {
+export function retrieveJWT (storageKey, cookieKey, storage) {
+  return Promise.resolve(storage.getItem(storageKey)).then(jwt => {
     let token = jwt || getCookie(cookieKey);
     if (token && token !== 'null' && !payloadIsValid(decode(token))) {
       token = undefined;

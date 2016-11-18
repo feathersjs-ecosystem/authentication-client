@@ -9,7 +9,7 @@ export default function runTests (client, options) {
     });
 
     it('sets the name used for localstorage', () => {
-      expect(client.passport.options.tokenKey).to.equal('feathers-jwt');
+      expect(client.passport.options.storageKey).to.equal('feathers-jwt');
     });
 
     it('sets the auth service path', () => {
