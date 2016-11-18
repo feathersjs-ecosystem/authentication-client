@@ -12,7 +12,7 @@ export default function populateHeader (options = {}) {
 
     if (hook.params.accessToken) {
       hook.params.headers = Object.assign({}, {
-        [options.header || 'authorization']: hook.params.accessToken
+        [options.header || 'authorization']: options.prefix ? `${options.prefix} ${hook.params.accessToken}` : hook.params.accessToken
       }, hook.params.headers);
     }
 
