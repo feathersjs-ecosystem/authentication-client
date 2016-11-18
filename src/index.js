@@ -1,21 +1,23 @@
 import hooks from './hooks';
-import Authentication from './authentication';
+import Passport from './passport';
 
 const defaults = {
   cookie: 'feathers-jwt',
   tokenKey: 'accessToken',
-  service: '/authentication'
+  path: '/authentication',
+  entity: 'user',
+  service: 'users'
 };
 
-export default function (opts = {}) {
-  const options = Object.assign({}, defaults, opts);
+export default function (config = {}) {
+  const options = Object.assign({}, defaults, config);
 
   return function () {
     const app = this;
 
-    app.authentication = new Authentication(app, options);
-    app.authenticate = app.authentication.authenticate.bind(app.authentication);
-    app.logout = app.authentication.logout.bind(app.authentication);
+    app.passport = new Passport(app, options);
+    app.authenticate = app.passport.authenticate.bind(app.passport);
+    app.logout = app.passport.logout.bind(app.passport);
 
     // Set up hook that adds token and user to params so that
     // it they can be accessed by client side hooks and services
@@ -25,7 +27,7 @@ export default function (opts = {}) {
         throw new Error(`It looks like feathers-hooks isn't configured. It is required before running feathers-authentication.`);
       }
 
-      service.before(hooks.populateAccessToken());
+      service.before(hooks.populateAccessToken(options));
     });
 
     // Set up hook that adds authorization header for REST provider

@@ -9,7 +9,7 @@ import {
    verifyJWT
  } from './utils';
 
-export default class Authentication {
+export default class Passport {
   constructor (app, options) {
     this.options = options;
     this.app = app;
@@ -27,17 +27,16 @@ export default class Authentication {
     });
   }
 
-  authenticate (options = {}) {
+  authenticate (data = {}) {
     const app = this.app;
-    const globalOptions = this.options;
-    let getOptions = Promise.resolve(options);
+    let getData = Promise.resolve(data);
 
     // If no strategy was given let's try to authenticate with a stored JWT
-    if (!options.strategy) {
-      if (options.accessToken) {
-        options.strategy = 'jwt';
+    if (!data.strategy) {
+      if (data.accessToken) {
+        data.strategy = 'jwt';
       } else {
-        getOptions = this.getJWT().then(accessToken => {
+        getData = this.getJWT().then(accessToken => {
           if (!accessToken) {
             return Promise.reject(new errors.NotAuthenticated(`Could not find stored JWT and no authentication strategy was given`));
           }
@@ -46,25 +45,23 @@ export default class Authentication {
       }
     }
 
-    const handleResponse = function (response) {
+    const handleResponse = (response) => {
       if (response.accessToken) {
         app.set('accessToken', response.accessToken);
-        app.get('storage').setItem(globalOptions.tokenKey, response.accessToken);
+        app.get('storage').setItem(this.options.tokenKey, response.accessToken);
       }
       return Promise.resolve(response);
     };
 
-    return getOptions.then(options => {
+    return getData.then(data => {
       return connected(app).then(socket => {
-        // TODO (EK): Handle OAuth logins
-        // If we are using a REST client
         if (app.rest) {
-          return app.service(options.service).create(options).then(handleResponse);
+          return app.service(this.options.path).create(data).then(handleResponse);
         }
 
         const method = app.io ? 'emit' : 'send';
 
-        return authenticateSocket(options, socket, method).then(handleResponse);
+        return authenticateSocket(data, socket, method).then(handleResponse);
       });
     });
   }
