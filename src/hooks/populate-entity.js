@@ -13,8 +13,8 @@ export default function populateEntity (options = {}) {
     throw new Error(`You need to pass 'options.field' to the populateEntity() hook.`);
   }
 
-  if (!options.on) {
-    throw new Error(`You need to pass 'options.on' to the populateEntity() hook.`);
+  if (!options.entity) {
+    throw new Error(`You need to pass 'options.entity' to the populateEntity() hook.`);
   }
 
   return function (hook) {
@@ -36,7 +36,9 @@ export default function populateEntity (options = {}) {
         return app.service(options.service).get(id);
       })
       .then(entity => {
-        hook.result[options.on] = entity;
+        hook.result[options.entity] = entity;
+        app.set(options.entity, entity);
+
         return Promise.resolve(hook);
       });
   };

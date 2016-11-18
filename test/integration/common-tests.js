@@ -2,27 +2,40 @@ import { expect } from 'chai';
 import localstorage from 'localstorage-memory';
 
 export default function runTests (client, options) {
-  it('client.authentication object', () => {
-    expect(typeof client.authentication.getJWT).to.equal('function');
-    expect(client.authentication.options).to.deep.equal({
-      cookie: 'feathers-jwt',
-      tokenKey: 'feathers-jwt',
-      localEndpoint: '/auth/local',
-      tokenEndpoint: '/auth/token'
+  console.log(client);
+  describe('default options', () => {
+    it('sets the cookie name', () => {
+      expect(client.passport.options.cookie).to.equal('feathers-jwt');
+    });
+
+    it('sets the name used for localstorage', () => {
+      expect(client.passport.options.tokenKey).to.equal('feathers-jwt');
+    });
+
+    it('sets the auth service path', () => {
+      expect(client.passport.options.path).to.equal('/authentication');
+    });
+
+    it('sets the entity', () => {
+      expect(client.passport.options.entity).to.equal('user');
+    });
+
+    it('sets the entity service', () => {
+      expect(client.passport.options.service).to.equal('users');
     });
   });
 
-  it('can use client.authentication.getJWT() to get the accessToken', () => {
+  it('can use client.passport.getJWT() to get the accessToken', () => {
     return client.authenticate(options).then(response => {
-      client.authentication.getJWT().then(accessToken => {
+      client.passport.getJWT().then(accessToken => {
         expect(accessToken).to.equal(response.accessToken);
       });
     });
   });
 
-  it('can decode a accessToken with client.authentication.verifyToken()', () => {
+  it('can decode a accessToken with client.passport.verifyToken()', () => {
     return client.authenticate(options).then(response => {
-      return client.authentication.verifyJWT(response).then(payload => {
+      return client.passport.verifyJWT(response).then(payload => {
         expect(payload.id).to.equal(0);
         expect(payload.iss).to.equal('feathers');
         expect(payload.sub).to.equal('auth');

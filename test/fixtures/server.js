@@ -1,76 +1,76 @@
+import path from 'path';
 import feathers from 'feathers';
-import primus from 'feathers-primus';
-import socketio from 'feathers-socketio';
 import rest from 'feathers-rest';
-import errorHandler from 'feathers-errors/handler';
+import socketio from 'feathers-socketio';
+import primus from 'feathers-primus';
 import hooks from 'feathers-hooks';
-import bodyParser from 'body-parser';
 import memory from 'feathers-memory';
+import bodyParser from 'body-parser';
+import errorHandler from 'feathers-errors/handler';
+import local from 'feathers-authentication-local';
+import jwt from 'feathers-authentication-jwt';
 import auth from 'feathers-authentication';
 
-export default function (settings, username, password, useSocketio = true) {
-  return new Promise((resolve, reject) => {
-    const app = feathers();
+const User = {
+  email: 'admin@feathersjs.com',
+  password: 'admin',
+  permissions: ['*']
+};
 
-    app.configure(rest())
-      .configure(useSocketio ? socketio() : primus({
-        transformer: 'websockets'
-      }))
-      .configure(hooks())
-      .use(bodyParser.json())
-      .use(bodyParser.urlencoded({ extended: true }))
-      .configure(auth(settings))
-      .use('/authorizations', memory())
-      .use('/users', memory())
-      .use('/messages', memory())
-      // .get('/get-jwt', function(req, res) {
-      //   res.json({ token: req.token });
-      // })
-      .use(errorHandler());
+function customizeJWTPayload () {
+  return function (hook) {
+    hook.data.payload = {
+      id: hook.params.user.id
+    };
 
-    app.service('authentication').before({
-      create (hook) {
-        if (hook.data.login === 'testing') {
-          hook.params.authentication = 'test-auth';
+    return Promise.resolve(hook);
+  };
+}
 
-          hook.data.payload = {
-            userId: 0,
-            authentication: 'test-auth'
-          };
-        } else if (hook.data.login === 'testing-fail') {
-          hook.params.authentication = 'test-auth';
+export default function (settings, socketProvider) {
+  const app = feathers();
 
-          hook.data.payload = {
-            authentication: 'test-auth'
-          };
-        }
-      }
-    });
+  app.configure(rest())
+    .configure(socketProvider === 'socketio' ? socketio() : primus({
+      transformer: 'websockets'
+    }))
+    .configure(hooks())
+    .use(bodyParser.json())
+    .use(bodyParser.urlencoded({ extended: true }))
+    .configure(auth(settings))
+    .configure(local())
+    .configure(jwt())
+    .use('/users', memory())
+    .use('/', feathers.static(path.resolve(__dirname, '/public')))
+    .use(errorHandler());
 
-    // Message hooks
-    app.service('messages').before({
-      all: [
-        auth.hooks.authenticate(),
-        auth.hooks.isAuthenticated()
+  app.service('authentication').hooks({
+    before: {
+      create: [
+        auth.hooks.authenticate(['jwt', 'local']),
+        customizeJWTPayload()
+      ],
+      remove: [
+        auth.hooks.authenticate('jwt')
       ]
-    });
-
-    // User hooks
-    app.service('users').hooks({
-      before: {
-        create: [
-          auth.hooks.hashPassword()
-        ]
-      }
-    });
-
-    // create a user
-    app.service('users').create({ email: username, password })
-      .then(() => Promise.all([
-        app.service('messages').create({ text: 'A million people walk into a Silicon Valley bar' }),
-        app.service('messages').create({ text: 'Nobody buys anything' }),
-        app.service('messages').create({ text: 'Bar declared massive success' })
-      ]))
-      .then(() => resolve(app));
+    }
   });
+
+  // Add a hook to the user service that automatically replaces
+  // the password with a hash of the password before saving it.
+  app.service('users').hooks({
+    before: {
+      find: [
+        auth.hooks.authenticate('jwt')
+      ],
+      create: [
+        local.hooks.hashPassword({ passwordField: 'password' })
+      ]
+    }
+  });
+
+  // Create a user that we can use to log in
+  app.service('users').create(User).catch(console.error);
+
+  return app;
 }

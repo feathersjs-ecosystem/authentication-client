@@ -3,7 +3,7 @@ import Passport from './passport';
 
 const defaults = {
   cookie: 'feathers-jwt',
-  tokenKey: 'accessToken',
+  tokenKey: 'feathers-jwt',
   path: '/authentication',
   entity: 'user',
   service: 'users'

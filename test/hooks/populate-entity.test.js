@@ -19,6 +19,7 @@ describe('hooks:populateEntity', () => {
         authentication: {
           verifyJWT: () => Promise.resolve({ userId: '1' })
         },
+        set: () => {},
         service: () => {
           return {
             get: () => Promise.resolve(user)
@@ -30,7 +31,7 @@ describe('hooks:populateEntity', () => {
     options = {
       service: 'users',
       field: 'userId',
-      on: 'user'
+      entity: 'user'
     };
   });
 
@@ -38,11 +39,9 @@ describe('hooks:populateEntity', () => {
     it('throws an error', () => {
       delete options.service;
 
-      try {
+      expect(() => {
         populateEntity(options);
-      } catch (error) {
-        expect(error).to.not.equal(undefined);
-      }
+      }).to.throw;
     });
   });
 
@@ -50,23 +49,19 @@ describe('hooks:populateEntity', () => {
     it('throws an error', () => {
       delete options.field;
 
-      try {
+      expect(() => {
         populateEntity(options);
-      } catch (error) {
-        expect(error).to.not.equal(undefined);
-      }
+      }).to.throw;
     });
   });
 
-  describe('when options.on is missing', () => {
+  describe('when options.entity is missing', () => {
     it('throws an error', () => {
-      delete options.on;
+      delete options.entity;
 
-      try {
+      expect(() => {
         populateEntity(options);
-      } catch (error) {
-        expect(error).to.not.equal(undefined);
-      }
+      }).to.throw;
     });
   });
 
