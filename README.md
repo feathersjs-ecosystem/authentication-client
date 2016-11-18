@@ -33,7 +33,7 @@ The main feathers client instance has a few public methods:
 It also has a `app.passport` instance that, like on the server, exposes utils functions for dealing with JWTs:
 
 - `app.passport.getJWT()` - pull it from localstorage or the cookie
-- `app.passport.verifyJWT()` - verify that a JWT is not expired and decode it to get the payload.
+- `app.passport.verifyJWT(token)` - verify that a JWT is not expired and decode it to get the payload.
 
 **Note:** All these methods return promises.
 
