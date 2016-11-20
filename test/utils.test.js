@@ -67,11 +67,3 @@ describe('verifyJWT', () => {
     });
   });
 });
-
-describe('getSocketMethodName', () => {
-  it('returns the correct provider name for all providers', () => {
-    expect(getSocketMethodName({rest: true})).to.equal(null);
-    expect(getSocketMethodName({io: true})).to.equal('emit');
-    expect(getSocketMethodName({primus: true})).to.equal('send');
-  });
-});
