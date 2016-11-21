@@ -69,23 +69,6 @@ export default function (settings, socketProvider) {
     }
   });
 
-  const _super = app.setup;
-  app.setup = function () {
-    let result = _super.apply(this, arguments);
-
-    // Socket.io middleware
-    if (app.io) {
-      console.log('listening to upgrade-me');
-
-      app.io.on('upgrade-me', () => {
-        console.log('got upgrade-me message');
-        app.io.broadcast.emit('boom', {message: 'from app'});
-      });
-    }
-
-    return result;
-  };
-
   // Create a user that we can use to log in
   app.service('users').create(User).catch(console.error);
 
