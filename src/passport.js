@@ -70,7 +70,7 @@ export default class Passport {
                 .catch(error => {
                   debug('Error re-authenticating after socket upgrade', error);
                   socket.authenticated = false;
-                  app.emit('reconnect-auth-error', error);
+                  app.emit('reauthentication-error', error);
                 });
             }
           });
@@ -91,7 +91,7 @@ export default class Passport {
                   .catch(error => {
                     debug('Error re-authenticating after socket upgrade', error);
                     socket.authenticated = false;
-                    app.emit('upgrade-auth-error', error);
+                    app.emit('reauthentication-error', error);
                   });
               }
             });

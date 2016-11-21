@@ -38,9 +38,9 @@ It also has a `app.passport` instance that, like on the server, exposes utils fu
 
 **Note:** All these methods return promises.
 
-### Special Events
+### Handling the special re-authentication errors
 
-In the event that your server goes down or the client loses connectivity, it will automatically handle attempting to re-authenticate the socket when the client regains connectivity with the server. In order to handle an authentication failure during automatic re-authentication you need to implement the following event listeners:
+In the event that your server goes down or the client loses connectivity, it will automatically handle attempting to re-authenticate the socket when the client regains connectivity with the server. In order to handle an authentication failure during automatic re-authentication you need to implement the following event listener:
 
 ```js
 const errorHandler = error => {
@@ -52,10 +52,9 @@ const errorHandler = error => {
     // You are now authenticated again
   });
 };
-// Handle when auth fails during a transport upgrade
-app.on('upgrade-auth-error', errorHandler); 
-// Handle when auth fails during a reconnect
-app.on('reconnect-auth-error', errorHandler)
+
+// Handle when auth fails during a reconnect or a transport upgrade
+app.on('reauthentication-error', errorHandler)
 ```
 
 
