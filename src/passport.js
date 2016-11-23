@@ -6,6 +6,10 @@ const debug = Debug('feathers-authentication-client');
 
 export default class Passport {
   constructor (app, options) {
+    if (app.passport) {
+      throw new Error('You have already registered authentication on this client app instance. You only need to do it once.');
+    }
+    
     this.options = options;
     this.app = app;
     this.storage = app.get('storage') || this.getStorage(options.storage);
