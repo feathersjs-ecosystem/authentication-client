@@ -22,21 +22,11 @@ export default class Passport {
     const app = this.app;
     const socket = app.io || app.primus;
     const emit = app.io ? 'emit' : 'send';
-    const disconnect = app.io ? 'disconnect' : 'end';
-    const reconnecting = app.io ? 'reconnecting' : 'reconnect';
     const reconnected = app.io ? 'reconnect' : 'reconnected';
 
     if (!socket) {
       return;
     }
-
-    socket.on(disconnect, () => {
-      debug('Socket disconnected');
-    });
-
-    socket.on(reconnecting, () => {
-      debug('Socket reconnecting');
-    });
 
     socket.on(reconnected, () => {
       debug('Socket reconnected');
