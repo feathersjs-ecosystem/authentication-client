@@ -1,11 +1,9 @@
 const feathers = require('feathers');
 const rest = require('feathers-rest');
 const socketio = require('feathers-socketio');
-// const primus = require('feathers-primus');
 const hooks = require('feathers-hooks');
 const memory = require('feathers-memory');
 const bodyParser = require('body-parser');
-// const errors = require('feathers-errors');
 const errorHandler = require('feathers-errors/handler');
 const auth = require('feathers-authentication');
 const local = require('feathers-authentication-local');
