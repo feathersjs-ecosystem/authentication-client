@@ -79,7 +79,7 @@ export default class Passport {
       if (socket.connected) {
         socketUpgradeHandler();
       } else {
-        socket.on('connect', socketUpgradeHandle);
+        socket.on('connect', socketUpgradeHandler);
       }
     }
   }
