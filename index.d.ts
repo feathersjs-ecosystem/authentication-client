@@ -20,7 +20,7 @@ declare namespace e {
   }
 
   interface DataCredential{
-    [string]: string;
+    [index: string]: string;
   }
 
   interface Credentials extends DataCredential{
