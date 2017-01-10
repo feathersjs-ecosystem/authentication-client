@@ -18,5 +18,32 @@ declare namespace e {
     entity?: 'user';
     service?: 'users';
   }
+
+  interface DataCredential{
+    [string]: string;
+  }
+
+  interface Credentials extends DataCredential{
+    strategy?:any;
+    accessToken?: string;
+    type: 'local' | 'token';
+  }
+
+  class Passport {
+    constructor(app: any, options: Config);
+    setupSocketListeners(): void;
+    connected(): Promise<any>;
+    authenticate(credentials?: Credentials): any;
+    authenticateSocket(credentials: Credentials, socket: any, emit: any): any;
+    logoutSocket(socket: any, emit: any): any;
+    logout(): Promise<any>;
+    setJWT(data: any): Promise<any>;
+    getJWT(): Promise<any>;
+    verifyJWT(token: string): Promise<string>;
+    payloadIsValid(payload: string): boolean;
+    getCookie(name: string): string;
+    clearCookie(name: string): null;
+    getStorage(storage: any): any;
+  }
 }
 
