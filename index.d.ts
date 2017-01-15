@@ -1,12 +1,8 @@
 
-export as namespace authentication;
-
-export default e;
-
 declare function e(config?: e.Config) : () => void;
 
 declare namespace e {
-  const defaults: Config;
+  export const defaults: Config;
 
   interface Config {
     storage?:any;
@@ -47,3 +43,4 @@ declare namespace e {
   }
 }
 
+export = e;
