@@ -75,12 +75,10 @@ export default class Passport {
       });
     }
 
-    if (socket.io) {
-      if (socket.connected) {
-        socketUpgradeHandler();
-      } else {
-        socket.on('connect', socketUpgradeHandler);
-      }
+    if (socket.io && socket.io.engine) {
+      socketUpgradeHandler();
+    } else {
+      socket.on('connect', socketUpgradeHandler);
     }
   }
 
