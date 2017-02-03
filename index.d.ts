@@ -22,7 +22,7 @@ declare namespace e {
   interface Credentials extends DataCredential{
     strategy?:any;
     accessToken?: string;
-    type: 'local' | 'token';
+    type: 'local' | 'token' | string;
   }
 
   class Passport {
