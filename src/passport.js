@@ -108,7 +108,7 @@ export default class Passport {
 
     return new Promise((resolve, reject) => {
       const connected = app.primus ? 'open' : 'connect';
-      const disconnect = app.io ? 'disconnect' : 'end';
+      const disconnect = this.getEventName(app.io ? 'disconnect' : 'end');
       const timeout = setTimeout(() => {
         debug('Socket connection timed out');
         reject(new Error('Socket connection timed out'));
@@ -166,6 +166,8 @@ export default class Passport {
     });
   }
 
+  getEventName ()  { return this.socketEventPrefix + ev; }
+
   // Returns a promise that authenticates a socket
   authenticateSocket (credentials, socket, emit) {
     return new Promise((resolve, reject) => {
@@ -175,7 +177,7 @@ export default class Passport {
       }, this.options.timeout);
 
       debug('Attempting to authenticate socket');
-      socket[emit]('authenticate', credentials, (error, data) => {
+      socket[emit](this.getEventName('authenticate'), credentials, (error, data) => {
         if (error) {
           return reject(error);
         }
@@ -196,7 +198,7 @@ export default class Passport {
         reject(new Error('Logout timed out'));
       }, this.options.timeout);
 
-      socket[emit]('logout', error => {
+      socket[emit](this.getEventName('logout'), error => {
         clearTimeout(timeout);
         socket.authenticated = false;
 
