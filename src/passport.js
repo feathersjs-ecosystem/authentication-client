@@ -166,7 +166,7 @@ export default class Passport {
     });
   }
 
-  getEventName (ev)  {
+  getEventName (ev) {
     return this.socketEventPrefix + ev;
   }
 

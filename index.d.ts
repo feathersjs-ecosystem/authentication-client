@@ -13,6 +13,7 @@ declare namespace feathersAuthClient {
     path?: string;
     entity?: string;
     service?: string;
+    socketEventPrefix?: string;
   }
 
   interface Credentials {
@@ -21,7 +22,7 @@ declare namespace feathersAuthClient {
     type: string;
     [index: string]: any;
   }
-  
+
   class Passport {
     constructor(app: any, options: Config);
     setupSocketListeners(): void;
