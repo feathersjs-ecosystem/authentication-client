@@ -165,7 +165,7 @@ export default class Passport {
   }
 
   getEventName (ev) {
-    return this.socketEventPrefix + ev;
+    return this.options.socketEventPrefix + ev;
   }
 
   // Returns a promise that authenticates a socket
