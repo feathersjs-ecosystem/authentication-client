@@ -166,7 +166,9 @@ export default class Passport {
     });
   }
 
-  getEventName ()  { return this.socketEventPrefix + ev; }
+  getEventName (ev)  {
+    return this.socketEventPrefix + ev;
+  }
 
   // Returns a promise that authenticates a socket
   authenticateSocket (credentials, socket, emit) {
