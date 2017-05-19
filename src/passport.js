@@ -59,30 +59,28 @@ export default class Passport {
     });
 
     const socketUpgradeHandler = () => {
-      socket.io.engine.on('upgrade', () => {
-        debug('Socket upgrading');
+      debug('Socket upgrading');
 
         // If socket was already authenticated then re-authenticate
         // it with the server automatically.
-        if (socket.authenticated) {
-          const data = {
-            strategy: this.options.jwtStrategy,
-            accessToken: app.get('accessToken')
-          };
+      if (socket.authenticated) {
+        const data = {
+          strategy: this.options.jwtStrategy,
+          accessToken: app.get('accessToken')
+        };
 
-          this.authenticateSocket(data, socket, emit)
+        this.authenticateSocket(data, socket, emit)
             .then(this.setJWT)
             .catch(error => {
               debug('Error re-authenticating after socket upgrade', error);
               socket.authenticated = false;
               app.emit('reauthentication-error', error);
             });
-        }
-      });
+      }
     };
 
     if (socket.io && socket.io.engine) {
-      socketUpgradeHandler();
+      socket.io.engine.on('upgrade', socketUpgradeHandler);
     } else {
       socket.on('connect', socketUpgradeHandler);
     }
