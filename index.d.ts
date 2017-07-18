@@ -12,6 +12,7 @@ declare namespace feathersAuthClient {
     path?: string;
     entity?: string;
     service?: string;
+    socketEventPrefix?: string;
   }
 
   interface Credentials {

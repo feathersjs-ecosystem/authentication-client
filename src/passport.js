@@ -59,30 +59,28 @@ export default class Passport {
     });
 
     const socketUpgradeHandler = () => {
-      socket.io.engine.on('upgrade', () => {
-        debug('Socket upgrading');
+      debug('Socket upgrading');
 
         // If socket was already authenticated then re-authenticate
         // it with the server automatically.
-        if (socket.authenticated) {
-          const data = {
-            strategy: this.options.jwtStrategy,
-            accessToken: app.get('accessToken')
-          };
+      if (socket.authenticated) {
+        const data = {
+          strategy: this.options.jwtStrategy,
+          accessToken: app.get('accessToken')
+        };
 
-          this.authenticateSocket(data, socket, emit)
+        this.authenticateSocket(data, socket, emit)
             .then(this.setJWT)
             .catch(error => {
               debug('Error re-authenticating after socket upgrade', error);
               socket.authenticated = false;
               app.emit('reauthentication-error', error);
             });
-        }
-      });
+      }
     };
 
     if (socket.io && socket.io.engine) {
-      socketUpgradeHandler();
+      socket.io.engine.on('upgrade', socketUpgradeHandler);
     } else {
       socket.on('connect', socketUpgradeHandler);
     }
@@ -108,7 +106,7 @@ export default class Passport {
 
     return new Promise((resolve, reject) => {
       const connected = app.primus ? 'open' : 'connect';
-      const disconnect = app.io ? 'disconnect' : 'end';
+      const disconnect = this.getEventName(app.io ? 'disconnect' : 'end');
       const timeout = setTimeout(() => {
         debug('Socket connection timed out');
         reject(new Error('Socket connection timed out'));
@@ -166,6 +164,10 @@ export default class Passport {
     });
   }
 
+  getEventName (ev) {
+    return this.options.socketEventPrefix + ev;
+  }
+
   // Returns a promise that authenticates a socket
   authenticateSocket (credentials, socket, emit) {
     return new Promise((resolve, reject) => {
@@ -175,7 +177,7 @@ export default class Passport {
       }, this.options.timeout);
 
       debug('Attempting to authenticate socket');
-      socket[emit]('authenticate', credentials, (error, data) => {
+      socket[emit](this.getEventName('authenticate'), credentials, (error, data) => {
         if (error) {
           return reject(error);
         }
@@ -196,7 +198,7 @@ export default class Passport {
         reject(new Error('Logout timed out'));
       }, this.options.timeout);
 
-      socket[emit]('logout', error => {
+      socket[emit](this.getEventName('logout'), error => {
         clearTimeout(timeout);
         socket.authenticated = false;
 

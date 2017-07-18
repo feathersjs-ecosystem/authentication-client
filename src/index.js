@@ -9,6 +9,7 @@ const defaults = {
   path: '/authentication',
   entity: 'user',
   service: 'users',
+  socketEventPrefix: '',
   timeout: 5000
 };
 
