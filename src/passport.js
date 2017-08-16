@@ -6,7 +6,7 @@ import {clearCookie, getCookie, payloadIsValid, Storage} from './utils';
 const debug = Debug('feathers-authentication-client');
 
 export default class Passport {
-  constructor(app, options) {
+  constructor (app, options) {
     if (app.passport) {
       throw new Error('You have already registered authentication on this client app instance. You only need to do it once.');
     }
@@ -28,7 +28,7 @@ export default class Passport {
     this.setupSocketListeners();
   }
 
-  setupSocketListeners() {
+  setupSocketListeners () {
     const app = this.app;
     const socket = app.io || app.primus;
     const emit = app.io ? 'emit' : 'send';
@@ -88,7 +88,7 @@ export default class Passport {
     }
   }
 
-  connected() {
+  connected () {
     const app = this.app;
 
     if (app.rest) {
@@ -133,7 +133,7 @@ export default class Passport {
     });
   }
 
-  authenticate(credentials = {}) {
+  authenticate (credentials = {}) {
     const app = this.app;
     let getCredentials = Promise.resolve(credentials);
 
@@ -155,7 +155,7 @@ export default class Passport {
       return this.connected(app).then(socket => {
         if (app.rest) {
           const service = app.service(this.options.path);
-          if (credentials.strategy == 'oauth') {
+          if (credentials.strategy === 'oauth') {
             return service
               .create(credentials, {
                 headers: {
@@ -183,7 +183,7 @@ export default class Passport {
   }
 
   // Returns a promise that authenticates a socket
-  authenticateSocket(credentials, socket, emit) {
+  authenticateSocket (credentials, socket, emit) {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         debug('authenticateSocket timed out');
@@ -205,7 +205,7 @@ export default class Passport {
     });
   }
 
-  logoutSocket(socket, emit) {
+  logoutSocket (socket, emit) {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         debug('logoutSocket timed out');
@@ -225,7 +225,7 @@ export default class Passport {
     });
   }
 
-  logout() {
+  logout () {
     const app = this.app;
 
     app.set('accessToken', null);
@@ -247,7 +247,7 @@ export default class Passport {
     });
   }
 
-  setJWT(data) {
+  setJWT (data) {
     const accessToken = (data && data.accessToken) ? data.accessToken : data;
 
     if (accessToken) {
@@ -258,7 +258,7 @@ export default class Passport {
     return Promise.resolve(data);
   }
 
-  getJWT() {
+  getJWT () {
     const app = this.app;
     return new Promise((resolve, reject) => {
       const accessToken = app.get('accessToken');
@@ -282,7 +282,7 @@ export default class Passport {
   }
 
   // Pass a jwt token, get back a payload if it's valid.
-  verifyJWT(token) {
+  verifyJWT (token) {
     if (typeof token !== 'string') {
       return Promise.reject(new Error('Token provided to verifyJWT is missing or not a string'));
     }
@@ -301,7 +301,7 @@ export default class Passport {
   }
 
   // Returns a storage implementation
-  getStorage(storage) {
+  getStorage (storage) {
     if (storage) {
       return storage;
     }
