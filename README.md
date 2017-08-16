@@ -75,6 +75,7 @@ The following default options will be mixed in with the settings you pass in whe
   service: 'users', // the service to look up the entity
   cookie: 'feathers-jwt', // the name of the cookie to parse the JWT from when cookies are enabled server side
   storageKey: 'feathers-jwt', // the key to store the accessToken in localstorage or AsyncStorage on React Native
+  prefix: '', // set "Bearer" for OAuth support
 }
 ```
 
@@ -106,7 +107,7 @@ client.configure(hooks())
   .configure(auth({ storage: localStorage }));
 
 client.authenticate({
-  strategy: 'local',
+  strategy: 'local', //can be oauth for OAuth support
   email: 'admin@feathersjs.com',
   password: 'admin'
 })
