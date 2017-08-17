@@ -11,7 +11,7 @@ import createApplication from '../fixtures/server';
 const port = 8998;
 const baseURL = `http://localhost:${port}`;
 
-const app = createApplication({secret: 'supersecret'});
+const app = createApplication({secret: 'supersecret', local: {name: 'oauth'}});
 let options;
 
 describe('OAUTH client authentication', () => {

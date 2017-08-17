@@ -20,6 +20,8 @@ const User = {
 export default function (settings, socketProvider) {
   const app = feathers();
 
+  settings.local = settings.local || {};
+
   app.configure(rest())
     .configure(socketProvider === 'socketio' ? socketio() : primus({
       transformer: 'websockets'
@@ -28,7 +30,7 @@ export default function (settings, socketProvider) {
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true }))
     .configure(auth(settings))
-    .configure(local())
+    .configure(local(settings.local))
     .configure(jwt())
     .use('/users', memory())
     .use('/', feathers.static(path.resolve(__dirname, '/public')))
