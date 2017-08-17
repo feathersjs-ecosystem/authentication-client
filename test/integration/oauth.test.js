@@ -11,7 +11,7 @@ import createApplication from '../fixtures/server';
 const port = 8998;
 const baseURL = `http://localhost:${port}`;
 
-const app = createApplication({secret: 'supersecret', local: {name: 'oauth'}});
+const app = createApplication({secret: 'supersecret', bodyKey: 'access_token', local: {name: 'oauth'}});
 let options;
 
 describe('OAUTH client authentication', () => {
@@ -24,9 +24,7 @@ describe('OAUTH client authentication', () => {
       client = feathers()
         .configure(hooks())
         .configure(rest(baseURL).superagent(superagent))
-        .configure(authentication({
-          bodyKey: 'access_token'
-        }));
+        .configure(authentication());
 
       done();
     });
@@ -55,6 +53,7 @@ describe('OAUTH client authentication', () => {
 
   it('can decode a accessToken with client.passport.verifyToken()', () => {
     return client.authenticate(options).then(response => {
+      console.log('RESPONSE', response);
       return client.passport.verifyJWT(response.accessToken).then(payload => {
         expect(payload.userId).to.equal(0);
         expect(payload.iss).to.equal('feathers');

@@ -163,8 +163,8 @@ export default class Passport {
                 }
               })
               .then(response => {
-                response.accessToken = response.access_token;
-                response.refreshToken = response.refresh_token;
+                response.accessToken = response.access_token || response.accessToken;
+                response.refreshToken = response.refresh_token || response.refreshToken;
                 return response;
               })
               .then(this.setJWT);
