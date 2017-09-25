@@ -21,6 +21,7 @@ export default function init (config = {}) {
     app.passport = new Passport(app, options);
     app.authenticate = app.passport.authenticate.bind(app.passport);
     app.logout = app.passport.logout.bind(app.passport);
+    app.logoutSocket = app.passport.logoutSocket.bind(app.passport);
 
     // Set up hook that adds token and user to params so that
     // it they can be accessed by client side hooks and services

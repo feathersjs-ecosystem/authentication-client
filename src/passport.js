@@ -189,14 +189,19 @@ export default class Passport {
     });
   }
 
-  logoutSocket (socket, emit) {
+  logoutSocket () {
+    const app = this.app;
+
+    const method = app.io ? 'emit' : 'send';
+    const socket = app.io ? app.io : app.primus;
+
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         debug('logoutSocket timed out');
         reject(new Error('Logout timed out'));
       }, this.options.timeout);
 
-      socket[emit]('logout', error => {
+      socket[method]('logout', error => {
         clearTimeout(timeout);
         socket.authenticated = false;
 
@@ -216,19 +221,17 @@ export default class Passport {
     this.clearCookie(this.options.cookie);
 
     // remove the accessToken from localStorage
-    return Promise.resolve(app.get('storage').removeItem(this.options.storageKey)).then(() => {
-      // If using sockets de-authenticate the socket
-      if (app.io || app.primus) {
-        const method = app.io ? 'emit' : 'send';
-        const socket = app.io ? app.io : app.primus;
+    return Promise.resolve(
+      app.get('storage').removeItem(this.options.storageKey)).then(() => {
+        // If using sockets de-authenticate the socket
+        if (app.io || app.primus) {
+          return this.logoutSocket();
+        }
+      }).then(result => {
+        app.emit('logout', result);
 
-        return this.logoutSocket(socket, method);
-      }
-    }).then(result => {
-      app.emit('logout', result);
-
-      return result;
-    });
+        return result;
+      });
   }
 
   setJWT (data) {

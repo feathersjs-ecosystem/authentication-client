@@ -27,7 +27,7 @@ declare namespace feathersAuthClient {
     connected(): Promise<any>;
     authenticate(credentials?: Credentials): any;
     authenticateSocket(credentials: Credentials, socket: any, emit: any): any;
-    logoutSocket(socket: any, emit: any): Promise<any>;
+    logoutSocket(): Promise<any>;
     logout(): Promise<any>;
     setJWT(data: any): Promise<any>;
     getJWT(): Promise<any>;
