@@ -43,19 +43,19 @@ export default class Passport {
 
       // If socket was already authenticated then re-authenticate
       // it with the server automatically.
-      if (socket.authenticated) {
-        const data = {
-          strategy: this.options.jwtStrategy,
-          accessToken: app.get('accessToken')
-        };
-        this.authenticateSocket(data, socket, emit)
-          .then(this.setJWT)
-          .catch(error => {
-            debug('Error re-authenticating after socket reconnect', error);
-            socket.authenticated = false;
-            app.emit('reauthentication-error', error);
-          });
-      }
+      // if (socket.authenticated) {
+      const data = {
+        strategy: this.options.jwtStrategy,
+        accessToken: app.get('accessToken')
+      };
+      this.authenticateSocket(data, socket, emit)
+        .then(this.setJWT)
+        .catch(error => {
+          debug('Error re-authenticating after socket reconnect', error);
+          socket.authenticated = false;
+          app.emit('reauthentication-error', error);
+        });
+      // }
     });
 
     const socketUpgradeHandler = () => {
