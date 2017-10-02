@@ -18,7 +18,7 @@ client.configure(hooks())
   .configure(auth({ storage: localStorage }));
 
 client.authenticate({
-  strategy: 'local',
+  type: 'local',
   email: 'admin@feathersjs.com',
   password: 'admin'
 })
