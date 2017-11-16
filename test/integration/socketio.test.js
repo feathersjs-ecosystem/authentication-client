@@ -92,7 +92,7 @@ describe('Socket.io client authentication', function () {
       }
     });
 
-    client.authenticate(options).catch(e => done(e));
+    client.authenticate(options);
   });
 
   it('local username password authentication and access to protected service', () => {
