@@ -15,11 +15,13 @@ describe('hooks:populateAccessToken', () => {
             storageKey: 'feathers-jwt'
           }
         },
-        get: () => {return {
-          getItem(){
-            return 'my token';
-          }
-        }}
+        get: () => {
+          return {
+            getItem () {
+              return 'my token';
+            }
+          };
+        }
       }
     };
   });

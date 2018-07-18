@@ -130,7 +130,7 @@ describe('REST client authentication', () => {
       return client.logout();
     })
       .then(() => {
-        expect(client.get('storage').getItem(client.passport.options.storageKey)).to.be.undefined;
+        expect(client.get('storage').getItem(client.passport.options.storageKey)).to.equal(undefined);
         return Promise.resolve(client.get('storage').getItem('feathers-jwt'));
       })
       .then(accessToken => {
