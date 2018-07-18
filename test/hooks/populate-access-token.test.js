@@ -10,7 +10,16 @@ describe('hooks:populateAccessToken', () => {
       type: 'before',
       params: {},
       app: {
-        get: () => 'my token'
+        passport: {
+          options: {
+            storageKey: 'feathers-jwt'
+          }
+        },
+        get: () => {return {
+          getItem(){
+            return 'my token';
+          }
+        }}
       }
     };
   });
