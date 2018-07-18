@@ -62,7 +62,7 @@ describe('REST client authentication', () => {
   it('local username password authentication', () => {
     return client.authenticate(options).then(response => {
       expect(response.accessToken).to.not.equal(undefined);
-      expect(client.get('accessToken')).to.deep.equal(response.accessToken);
+      expect(client.get('storage').getItem(client.passport.options.storageKey)).to.deep.equal(response.accessToken);
     });
   });
 
@@ -70,7 +70,7 @@ describe('REST client authentication', () => {
     client.once('authenticated', response => {
       try {
         expect(response.accessToken).to.not.equal(undefined);
-        expect(client.get('accessToken')).to.deep.equal(response.accessToken);
+        expect(client.get('storage').getItem(client.passport.options.storageKey)).to.deep.equal(response.accessToken);
         done();
       } catch (e) {
         done(e);
@@ -119,7 +119,7 @@ describe('REST client authentication', () => {
       expect(response.accessToken).to.not.equal(undefined);
 
       return client.authenticate().then(response => {
-        expect(client.get('accessToken')).to.equal(response.accessToken);
+        expect(client.get('storage').getItem(client.passport.options.storageKey)).to.equal(response.accessToken);
       });
     });
   });
@@ -130,7 +130,7 @@ describe('REST client authentication', () => {
       return client.logout();
     })
       .then(() => {
-        expect(client.get('accessToken')).to.equal(null);
+        expect(client.get('storage').getItem(client.passport.options.storageKey)).to.be.undefined;
         return Promise.resolve(client.get('storage').getItem('feathers-jwt'));
       })
       .then(accessToken => {
