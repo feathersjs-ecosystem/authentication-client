@@ -68,7 +68,7 @@
     "istanbul": "^1.1.0-alpha.1",
     "localstorage-memory": "^1.0.2",
     "mocha": "^5.0.0",
-    "primus": "^7.0.0",
+    "primus": "^7.3.1",
     "primus-emitter": "^3.1.1",
     "semistandard": "^13.0.1",
     "socket.io-client": "^2.0.0",
